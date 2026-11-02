@@ -64,15 +64,15 @@ What survives all five corrections is a single number per bond that says, in pla
 flowchart TB
     subgraph one [" "]
         direction LR
-        A["Par-equivalent OAS<br/>215 trading nights"] --> B["Percent change<br/>with a spread floor"] --> C["Net of peer benchmark<br/>own issuer, frozen lines<br/>and jumps left out"]
+        A["Par-equiv OAS<br/>215 nights"] --> B["Percent change<br/>spread floored"] --> C["Net of peers<br/>ex own issuer,<br/>frozen, jumps"]
     end
     subgraph two [" "]
         direction LR
-        D["Sum over the window<br/>21 nights, then 42"] --> E["Divide by own noise<br/>prior 126 nights"] --> F["Centre and scale<br/>on reference issuers"]
+        D["Window sum<br/>21, then 42"] --> E["Divide by noise<br/>prior 126 nights"] --> F["Centre, scale<br/>on peer issuers"]
     end
     subgraph three [" "]
         direction LR
-        G["Mom21, Mom63x<br/>Conf21, Conf63x"] --> H["Reading and Trend<br/>beside the Gap"]
+        G["Mom21, Mom63x<br/>Conf21, Conf63x"] --> H["Reading, Trend<br/>beside the Gap"]
     end
     one --> two --> three
     style one fill:transparent,stroke:transparent
