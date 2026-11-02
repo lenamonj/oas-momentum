@@ -8,9 +8,9 @@
 [![Method](https://img.shields.io/badge/Method-v6.0-0EA5E9?style=for-the-badge)](oas_relative_momentum_spec.md)
 [![Market](https://img.shields.io/badge/Market-IG%20Credit-123D2F?style=for-the-badge)](#the-columns)
 
-**[The Question](#the-question-this-module-asks)** &nbsp;&middot;&nbsp; **[Columns](#the-columns)** &nbsp;&middot;&nbsp; **[Reading a Row](#how-to-read-a-row)** &nbsp;&middot;&nbsp; **[Fine Print](#the-fine-print-a-pm-should-carry-around)** &nbsp;&middot;&nbsp; **[Quick Start](#quick-start)** &nbsp;&middot;&nbsp; **[Tests](#tests)** &nbsp;&middot;&nbsp; **[Files](#where-the-exact-rules-live)**
+**[The Question](#the-question-this-module-asks)** &nbsp;&middot;&nbsp; **[Columns](#the-columns)** &nbsp;&middot;&nbsp; **[Reading a Row](#how-to-read-a-row)** &nbsp;&middot;&nbsp; **[Fine Print](#the-fine-print-a-pm-should-carry-around)** &nbsp;&middot;&nbsp; **[The Phone Call](#the-number-cannot-pick-up-the-phone)** &nbsp;&middot;&nbsp; **[Quick Start](#quick-start)** &nbsp;&middot;&nbsp; **[Tests](#tests)** &nbsp;&middot;&nbsp; **[Files](#where-the-exact-rules-live)**
 
-## How unusual was this bond's month, against its own history and its own peers?
+## How far did this bond move from its peers, sized by its own recent noise?
 
 </div>
 
@@ -54,11 +54,11 @@ Honesty turns out to be the hard part, because the obvious answer is wrong in ab
 
 **The obvious answer trusts every print.** Evaluated prices are not trades. Some bonds get re-marked once in a week and sit frozen in between. Some get a single bad print that jumps 40% overnight and snaps back. If those go into the benchmark, one stale line can make every bond in its cell look like it moved. So frozen bonds and jumps are kept out of everyone else's benchmark that night, and a single issuer's bad night has a bounded effect on its neighbours.
 
-**The obvious answer ignores the bond's personality.** A 5% relative move on a sleepy single-A utility is an event. The same 5% on a volatile BBB- name is a Tuesday. So each bond's move is divided by its own normal noise, measured over the six months before the window starts, with a correction for the way evaluated spreads partly reverse from one night to the next.
+**The obvious answer ignores the bond's personality.** A 5% relative move on a sleepy single-A utility is an event. The same 5% on a volatile BBB- name is a Tuesday. So each bond's move is divided by its own noise, measured over the six months before the window starts, with a correction for the way evaluated spreads partly reverse from one night to the next.
 
 **The obvious answer forgets the room.** After all that, a bond's score still has to be read against the other issuers in its peer group. If the whole cell widened, nobody in it underperformed; that is a sector story, and it belongs to the sector view. So the final number is centred on the median issuer of the bond's reference group and scaled by how widely that group's scores spread. A move the whole group shared drops out of every member's score, the same way it drops out of the Gap.
 
-What survives all five corrections is a single number per bond that says, in plain terms: this is how unusual this bond's month was, against its own history and against its own peers.
+What survives all five corrections is a single number per bond that says, in plain terms: this is how far this bond finished from the bonds that should trade like it, with every bond's move sized by its own recent noise.
 
 ```mermaid
 flowchart TB
@@ -94,7 +94,7 @@ A PM sees one row per bond.
 
 **Gap** is where the bond stands: basis points wide (+) or tight (-) of its peer group, straight from the relative value engine.
 
-**Mom21** is how the bond walked over the last 21 trading nights, in units of its own normal monthly noise. +1.5 means it tightened against its peers by one and a half times its ordinary monthly move. -1.5 means it widened against them by the same amount. Zero means it moved with the median issuer in its group.
+**Mom21** is how the bond walked over the last 21 trading nights, measured against its peers. Each bond's relative move is first divided by its own noise from the six months before the window. Mom21 then says how far that figure landed from the median issuer in the group, in units of how widely the group's figures spread this month. +1.5 means the bond finished one and a half of those units tighter than the median issuer. -1.5 means it finished the same distance wider. Zero means it moved with the median issuer in its group.
 
 **Mom63x** is the same measure over the two months before that: the 42 trading nights that end where Mom21 begins. The two windows never overlap, so the pair shows whether the recent walk continues an older one or turns against it.
 
@@ -104,15 +104,15 @@ A PM sees one row per bond.
 
 ## How to read a row
 
-Look at Issuer B. It is 25bp cheap to its peers. Over the last month it widened against them by 2.3 times its normal monthly move, with a clean A grade, and the two months before that it was already widening. The Reading says **cheap and underperforming**. The Trend says **continuing**.
+Look at Issuer B. It is 25bp cheap to its peers. Over the last month it finished 2.3 units wider than the median issuer in its group, with a clean A grade, and the two months before that it was already widening. The Reading says **cheap and underperforming**. The Trend says **continuing**.
 
 A PM who looked only at the Gap would see a bond 25bp cheap and think about buying it. The row says something more specific: the market has been marking this bond down against its neighbours for three months, steadily, on clean prints, and has not stopped. Someone knows something, or thinks they do. That is the question to go answer before adding a dollar.
 
 Now look at Issuer C. It is 15bp rich. For two months it tightened hard against its peers (Mom63x +2.1). This month it turned and widened (Mom21 -1.4). Reading: **rich and underperforming**. Trend: **reversing**. A bond that ran rich is giving some of it back.
 
-Issuer A is 18bp cheap and tightened against its peers this month, after two quiet months. **Cheap and outperforming**, **new**. The statistic does not say whether the gap will keep closing. It says the bond has started to move, and that the move is larger than an ordinary month for that bond.
+Issuer A is 18bp cheap and tightened against its peers this month, after two quiet months. **Cheap and outperforming**, **new**. The statistic does not say whether the gap will keep closing. It says the bond has started to pull away from its group, and by enough to earn a label.
 
-The labels follow two thresholds. Cheap is a Gap of +5bp or wider, rich is -5bp or tighter, fair is in between. A Mom value counts as a move at +1.0 or beyond (outperforming) or -1.0 or beyond (underperforming); inside that it is flat. In a quiet book about one in three bonds carries a move label on any given night, so a label marks the top third of moves by size. A Mom of 2 or more is unusual both for the bond's own history and against its peer group, and with an A grade it is worth a look whether or not the bond has a Gap view.
+The labels follow two thresholds. Cheap is a Gap of +5bp or wider, rich is -5bp or tighter, fair is in between. A Mom value counts as a move at +1.0 or beyond (outperforming) or -1.0 or beyond (underperforming); inside that it is flat. The yardstick comes from the group itself, so roughly the same share of bonds clears that line in a calm month and a wild one, about one in three on simulated spreads. A label marks a bond's place in its group's month, however big or small that month was. A Mom of 2 or more is far out in its group, and with an A grade it is worth a look whether or not the bond has a Gap view.
 
 | | Mom21 +1.0 or above | Mom21 between | Mom21 -1.0 or below |
 |---|:---:|:---:|:---:|
@@ -133,6 +133,8 @@ The labels follow two thresholds. Cheap is a Gap of +5bp or wider, rich is -5bp 
 > [!IMPORTANT]
 > **Gap and Mom point opposite ways.** A positive Gap is wide (cheap). A positive Mom is relative tightening (outperformed). The Reading column exists so nobody has to reconcile the two signs by eye at 7am.
 
+**Mom is a place in the group's month.** Its yardstick is how widely the group's scores spread this month, so the same +1.5 can sit on a large move in a wild month or a small one in a calm month. The move against the bond's own six months of noise is the raw score, `m21_score`, which sits in the full record and not in the row.
+
 **A month has a hard edge.** Mom21 is a straight 21-night sum. An event sits in it at full weight for exactly 21 nights and then moves into Mom63x. A Reading can change on the 22nd night with no new information; from then on the event shows in Trend.
 
 **A fallen angel changes peers overnight.** When the index table moves a bond to a new rating bucket, its whole history is scored against the new bucket's members. The first month after a downgrade compares the bond's old life to its new neighbours, and the downgrade move usually carries a jump event, so the grade is B or C.
@@ -143,11 +145,27 @@ The labels follow two thresholds. Cheap is a Gap of +5bp or wider, rich is -5bp 
 
 **Issuers roll up.** Ask for an issuer and every line is scored, then averaged into one row weighted by size, spread duration and spread, carrying the worst line's grade and a count of how many lines went in.
 
+## The number cannot pick up the phone
+
+Most credit shops are built around a small comic arrangement. On one side of the room sit the people who know the price of everything. A portfolio manager can tell you to the basis point where a ten-year BBB utility closed last night, and may be a little vague on what the utility plans to do about its coal plants. On the other side sit the credit analysts, who have read every covenant, spent Sunday inside the cash flow model, and will tell you with real feeling that the price is somebody else's department. They work for the same firm. They eat the same sandwiches. They can go a surprisingly long time without needing each other.
+
+Momentum is what makes them need each other.
+
+Go back to Issuer B. Twenty-five basis points cheap and three months of widening. The module has done everything a machine can do. It has kept the bad prints out of the benchmark, stripped away the market, sized the move against the bond's own noise and lined it up against its neighbours, and at the end of all that labour it has produced a single number, -2.3, which knows exactly one thing: this bond has been walking away from its group. It has no idea why. It has never read a transcript. It cannot tell you whether the CFO left in August, whether the new plant is running late, or whether one large insurer simply had to raise cash on a Thursday. It works like a smoke alarm, and no smoke alarm has ever told anyone what was burning.
+
+So the PM does the least quantitative thing in the entire process. The PM picks up the phone and asks the analyst why.
+
+Everything turns on the answer. Say the analyst winces and mentions that leverage has been creeping up for two quarters. Then the market has read the same story and priced it, and that 25bp is the going rate for a credit getting worse. Say the analyst shrugs and reports that the business has not changed. That is the better conversation, because now somebody in the chain has a reason the desk cannot see. A seller may have a problem that has nothing to do with the credit, in which case the PM has just found someone to buy from. Or a stranger may know something the analyst does not, in which case the analyst has some reading to do. Either way the desk knows on Wednesday what it did not know on Tuesday.
+
+A momentum read with no credit story attached is a rumour. A credit view that never looks at the tape is a private opinion. Relative value gets talked about as though it were a measurement, and on a good desk it behaves more like an argument between three parties who rarely meet. The curve says what the bond should cost. The tape says what the market has been doing about it. The credit story says whether the market has a point. Put them in one room often enough and something builds up that none of them holds alone: a deeper understanding of relative value, the working sense of which credits this market reads early, which it reads late, and which fundamentals it actually pays for. No screen sells that. It gets built one phone call at a time.
+
+The number found the bond. Somebody still has to go find out why.
+
 ## Why it matters
 
 Investment grade credit rewards patience and punishes inattention, and the two look identical from the outside. A desk with ten thousand bonds and a dozen people cannot watch every walk. It can watch every photograph, and it already does.
 
-This module hands the desk the walk. Every bond, on request, measured against the bonds that should trade like it, scaled to its own temperament, cleaned of the market, cleaned of bad prints, and graded for how much of the move to believe. It will not tell anyone what to buy. It will tell them which cheap bonds the market has been quietly marking down, which rich bonds have started to give it back, and which names moved last month by an amount that bond almost never moves.
+This module hands the desk the walk. Every bond, on request, measured against the bonds that should trade like it, scaled to its own temperament, cleaned of the market, cleaned of bad prints, and graded for how much of the move to believe. It will not tell anyone what to buy. It will tell them which cheap bonds the market has been quietly marking down, which rich bonds have started to give it back, and which names finished last month furthest from the bonds that should trade like them.
 
 Those are the bonds somebody else already noticed. Now we notice too.
 
