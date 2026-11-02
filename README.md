@@ -1,4 +1,20 @@
+<div align="center">
+
 # OAS Relative Momentum
+
+[![Python](https://img.shields.io/badge/Python-3.13-1C7A57?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Dependencies](https://img.shields.io/badge/Dependencies-Standard%20Library%20Only-123D2F?style=for-the-badge)](oasmom.py)
+[![Tests](https://img.shields.io/badge/Tests-42%20Passing-22C55E?style=for-the-badge)](#tests)
+[![Method](https://img.shields.io/badge/Method-v6.0-0EA5E9?style=for-the-badge)](oas_relative_momentum_spec.md)
+[![Market](https://img.shields.io/badge/Market-IG%20Credit-123D2F?style=for-the-badge)](#the-columns)
+
+**[The Question](#the-question-this-module-asks)** &nbsp;&middot;&nbsp; **[Columns](#the-columns)** &nbsp;&middot;&nbsp; **[Reading a Row](#how-to-read-a-row)** &nbsp;&middot;&nbsp; **[Fine Print](#the-fine-print-a-pm-should-carry-around)** &nbsp;&middot;&nbsp; **[Quick Start](#quick-start)** &nbsp;&middot;&nbsp; **[Tests](#tests)** &nbsp;&middot;&nbsp; **[Files](#where-the-exact-rules-live)**
+
+## How unusual was this bond's month, against its own history and its own peers?
+
+</div>
+
+<br>
 
 What if ten thousand bonds could each tell you a story?
 
@@ -20,13 +36,13 @@ This module exists to see it sooner.
 
 Every credit desk has a way to say whether a bond is cheap. Ours is the relative value engine. It sorts the index into cells of bonds that should trade alike (same sector, same subsector, same structure, same seniority, same rating bucket, same maturity bucket), fits a curve through each cell, and publishes one number per bond: the **Gap**. A Gap of +10 means the bond trades 10 basis points wider than its peers. A Gap of -10 means 10 tighter.
 
-The Gap is a photograph. It tells you where the bond is standing. It says nothing about which way the bond is walking.
+> The Gap is a photograph. It tells you where the bond is standing. It says nothing about which way the bond is walking.
 
 And the walk is where the information lives. Two bonds can both sit 20bp cheap to their curve. One got there over two years and has not moved since; the market has looked at it, shrugged, and decided it deserves to be there. The other was fair a month ago and has been sliding out every week. Same photograph. Completely different stories. A PM who treats them the same will, sooner or later, buy the second one at the wrong moment.
 
 ## The question this module asks
 
-Over the last month, did this bond's spread tighten or widen more than the bonds that look like it?
+> **Over the last month, did this bond's spread tighten or widen more than the bonds that look like it?**
 
 That is the whole question. Everything else in the module exists to answer it honestly.
 
@@ -44,12 +60,32 @@ Honesty turns out to be the hard part, because the obvious answer is wrong in ab
 
 What survives all five corrections is a single number per bond that says, in plain terms: this is how unusual this bond's month was, against its own history and against its own peers.
 
+```mermaid
+flowchart TB
+    subgraph one [" "]
+        direction LR
+        A["Par-equivalent OAS<br/>215 trading nights"] --> B["Percent change<br/>with a spread floor"] --> C["Net of peer benchmark<br/>own issuer, frozen lines<br/>and jumps left out"]
+    end
+    subgraph two [" "]
+        direction LR
+        D["Sum over the window<br/>21 nights, then 42"] --> E["Divide by own noise<br/>prior 126 nights"] --> F["Centre and scale<br/>on reference issuers"]
+    end
+    subgraph three [" "]
+        direction LR
+        G["Mom21, Mom63x<br/>Conf21, Conf63x"] --> H["Reading and Trend<br/>beside the Gap"]
+    end
+    one --> two --> three
+    style one fill:transparent,stroke:transparent
+    style two fill:transparent,stroke:transparent
+    style three fill:transparent,stroke:transparent
+```
+
 ## The columns
 
 A PM sees one row per bond.
 
 | ISIN | Issuer | Gap (+ wide) | Mom21 (+ tightened) | Conf21 | Mom63x | Conf63x | Reading | Trend |
-|---|---|---|---|---|---|---|---|---|
+|---|---|:---:|:---:|:---:|:---:|:---:|---|---|
 | US00000AAA11 | Issuer A | +18 | +1.6 | A | +0.4 | A | cheap and outperforming | new |
 | US00000BBB22 | Issuer B | +25 | -2.3 | A | -1.3 | B | cheap and underperforming | continuing |
 | US00000CCC33 | Issuer C | -15 | -1.4 | B | +2.1 | A | rich and underperforming | reversing |
@@ -78,17 +114,11 @@ Issuer A is 18bp cheap and tightened against its peers this month, after two qui
 
 The labels follow two thresholds. Cheap is a Gap of +5bp or wider, rich is -5bp or tighter, fair is in between. A Mom value counts as a move at +1.0 or beyond (outperforming) or -1.0 or beyond (underperforming); inside that it is flat. In a quiet book about one in three bonds carries a move label on any given night, so a label marks the top third of moves by size. A Mom of 2 or more is unusual both for the bond's own history and against its peer group, and with an A grade it is worth a look whether or not the bond has a Gap view.
 
-| Gap | Mom21 | Reading |
-|---|---|---|
-| cheap | +1.0 or above | cheap and outperforming |
-| cheap | -1.0 or below | cheap and underperforming |
-| cheap | between | cheap and flat |
-| rich | +1.0 or above | rich and outperforming |
-| rich | -1.0 or below | rich and underperforming |
-| rich | between | rich and flat |
-| fair | +1.0 or above | fair and outperforming |
-| fair | -1.0 or below | fair and underperforming |
-| fair | between | fair and flat |
+| | Mom21 +1.0 or above | Mom21 between | Mom21 -1.0 or below |
+|---|:---:|:---:|:---:|
+| **Cheap** | cheap and outperforming | cheap and flat | cheap and underperforming |
+| **Fair** | fair and outperforming | fair and flat | fair and underperforming |
+| **Rich** | rich and outperforming | rich and flat | rich and underperforming |
 
 | Mom63x | Mom21 | Trend |
 |---|---|---|
@@ -100,7 +130,8 @@ The labels follow two thresholds. Cheap is a Gap of +5bp or wider, rich is -5bp 
 
 ## The fine print a PM should carry around
 
-**Gap and Mom point opposite ways.** A positive Gap is wide (cheap). A positive Mom is relative tightening (outperformed). The Reading column exists so nobody has to reconcile the two signs by eye at 7am.
+> [!IMPORTANT]
+> **Gap and Mom point opposite ways.** A positive Gap is wide (cheap). A positive Mom is relative tightening (outperformed). The Reading column exists so nobody has to reconcile the two signs by eye at 7am.
 
 **A month has a hard edge.** Mom21 is a straight 21-night sum. An event sits in it at full weight for exactly 21 nights and then moves into Mom63x. A Reading can change on the 22nd night with no new information; from then on the event shows in Trend.
 
@@ -122,6 +153,106 @@ Those are the bonds somebody else already noticed. Now we notice too.
 
 ---
 
+## Quick start
+
+`oasmom.py` is a single file with no dependencies. This repo holds the momentum module only, so three inputs come from your own stack:
+
+| Input | Contract |
+|---|---|
+| `current` | `{isin: row}` from the index table. Each row carries `issuer_id`, `spread_dur`, `ttm_years`, `amount_outstanding`, `call_status` (`bullet`, `callable` or `unknown`), `rating_bucket`, and three nested peer ids: `cell_fine`, `cell_wide`, `cell_l3` |
+| `fetch` | `fetch(isins) -> {isin: {datetime.date: par_equiv_oas}}`: daily par-equivalent OAS in bp, 215 trading nights for a full history |
+| `gap` | The relative value engine's Gap in bp, passed through to the display row. `None` when the engine has none |
+
+This example runs as is from the repo root. It simulates 48 issuers and plants a widening in one of them over the last 21 nights:
+
+```python
+import math
+import random
+from datetime import date, timedelta
+
+import oasmom
+
+random.seed(7)
+
+nights = []
+night = date(2026, 10, 30)
+while len(nights) < 215:
+    if night.weekday() < 5:
+        nights.insert(0, night)
+    night -= timedelta(days=1)
+
+current = {
+    f"US{i:09d}0": {
+        "issuer_id": f"Issuer {i}",
+        "spread_dur": 6.0,
+        "ttm_years": 7.0,
+        "amount_outstanding": 500.0,
+        "call_status": "bullet",
+        "rating_bucket": "BBB",
+        "cell_fine": f"Sector {i % 2}|Sub {i % 4}|bullet|SR|BBB|5-7",
+        "cell_wide": f"Sector {i % 2}|bullet|SR|BBB|5-7",
+        "cell_l3": "bullet|SR|BBB|5-7",
+    }
+    for i in range(48)
+}
+target = "US0000000000"
+
+# 1% nightly noise; the target also widens 0.5% a night over the last 21 nights
+spreads = {}
+for isin in current:
+    oas = 100.0
+    spreads[isin] = {}
+    for t, night in enumerate(nights):
+        drift = 0.005 if isin == target and t >= len(nights) - 21 else 0.0
+        oas *= math.exp(drift + random.gauss(0, 0.01))
+        spreads[isin][night] = oas
+
+
+def fetch(isins):  # in production: the Bloomberg pull composed with ParEquivOAS
+    return {isin: spreads[isin] for isin in isins}
+
+
+bonds, issuers, diag = oasmom.request(current, fetch, [target])
+row = oasmom.display_row(target, bonds.get(target), gap=25.0, dg=diag[target])
+print(f"{row['Issuer']}: Mom21 {row['Mom21']:+.1f} ({row['Conf21']}), "
+      f"Mom63x {row['Mom63x']:+.1f} ({row['Conf63x']}), {row['Reading']}, {row['Trend']}")
+```
+
+```text
+Issuer 0: Mom21 -2.0 (A), Mom63x -0.7 (A), cheap and underperforming, new
+```
+
+| Call | Scores |
+|---|---|
+| `request(current, fetch, [isin, ...])` | A list of bonds, pulling only the cells they sit in |
+| `request(current, fetch, {"issuer": issuer_id})` | Every line of an issuer, plus the issuer roll-up |
+| `request(current, fetch)` | Every bond in the table |
+| `batch(current, fetch)` | Every bond, plus the month-end `tables` to persist and pass back as `request(..., tables=tables)` |
+
+## Tests
+
+```bash
+python test_oasmom.py             # 42 tests, about 90 seconds
+python test_oasmom.py --runtime   # adds the 7,000 bond timing test
+```
+
+Every test asserts, and every test runs on synthetic spreads. The null calibration test simulates a market with no momentum in it: 3,500 bonds over 230 nights on each of two seeds, 7,000 scores in all. A scale that is honest should make those scores look like unit noise.
+
+| Null calibration | Raw score | Mom21 (z) | Unit normal |
+|---|:---:|:---:|:---:|
+| Standard deviation | 1.020 | 1.036 | 1.000 |
+| Share beyond 2 | 4.73% | 5.39% | 4.55% |
+| Share beyond 3 | 0.43% | 0.40% | 0.27% |
+
+On the first seed, 32.8% of Mom21 values carry a move label and 98.2% grade A. These figures check the scale. They say nothing about forward spread returns, and this repo holds no backtest on market data.
+
 ## Where the exact rules live
 
-Every rule above is stated exactly, with every threshold, boundary and default, in `README.md` (definitions, eligibility, blank reasons, request mechanics) and `oas_relative_momentum_spec.md` (implementation guide, parameter table, reference code).
+Every rule above is stated exactly, with every threshold, boundary and default, in the first two files below.
+
+| File | Holds |
+|---|---|
+| [`README_detailed.md`](README_detailed.md) | Definitions, eligibility, blank reasons, request mechanics |
+| [`oas_relative_momentum_spec.md`](oas_relative_momentum_spec.md) | Implementation guide, parameter table, reference code |
+| [`oasmom.py`](oasmom.py) | Reference implementation, standard library only |
+| [`test_oasmom.py`](test_oasmom.py) | The 42 tests |
